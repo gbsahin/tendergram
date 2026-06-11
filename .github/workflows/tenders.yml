@@ -1,0 +1,37 @@
+name: Post tenders to Telegram
+
+on:
+  schedule:
+    - cron: "0 */4 * * *"   # every 4 hours (UTC)
+  workflow_dispatch:          # allows manual "Run workflow" button
+
+permissions:
+  contents: write             # needed to commit tenders.db back
+
+concurrency:
+  group: tendergram
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Fetch and post tenders
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHANNEL: ${{ secrets.TELEGRAM_CHANNEL }}
+        run: python main.py run
+
+      - name: Persist dedupe database
+        run: |
+          git config user.name "tendergram-bot"
+          git config user.email "actions@github.com"
+          git add tenders.db
+          git diff --cached --quiet || git commit -m "Update tender database [skip ci]"
+          git push
