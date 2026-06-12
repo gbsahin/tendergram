@@ -1,1 +1,1 @@
-# No third-party dependencies - Python 3.10+ stdlib only.
+pillow>=10.0
