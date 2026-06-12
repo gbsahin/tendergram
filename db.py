@@ -6,7 +6,7 @@ import config
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS tenders (
-    uid TEXT PRIMARY KEY,          -- source:source_id
+    uid TEXT PRIMARY KEY,
     source TEXT NOT NULL,
     source_id TEXT NOT NULL,
     title TEXT NOT NULL,
@@ -16,11 +16,11 @@ CREATE TABLE IF NOT EXISTS tenders (
     procurement_method TEXT,
     project_name TEXT,
     reference_no TEXT,
-    deadline TEXT,                 -- ISO date string
+    deadline TEXT,
     url TEXT,
     raw_excerpt TEXT,
     fetched_at TEXT DEFAULT (datetime('now')),
-    posted_at TEXT                 -- NULL until posted to Telegram
+    posted_at TEXT
 );
 CREATE INDEX IF NOT EXISTS idx_unposted ON tenders(posted_at) WHERE posted_at IS NULL;
 """
@@ -43,7 +43,6 @@ def init():
 
 
 def upsert(tender: dict) -> bool:
-    """Insert tender if new. Returns True if it was newly inserted."""
     uid = f"{tender['source']}:{tender['source_id']}"
     with connect() as con:
         cur = con.execute("SELECT 1 FROM tenders WHERE uid = ?", (uid,))

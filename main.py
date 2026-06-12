@@ -38,6 +38,20 @@ def cmd_fetch() -> int:
     return new
 
 
+def _send(t: dict, dry_run: bool) -> bool:
+    caption = tg.format_tender(t)
+    if config.VISUAL_CARDS:
+        try:
+            import card
+            png = card.render(t)
+            return tg.send_photo(png, caption, dry_run=dry_run)
+        except ImportError:
+            print("Pillow not installed; falling back to text post.")
+        except Exception as e:
+            print(f"Card rendering failed ({e}); falling back to text post.")
+    return tg.send_message(caption, dry_run=dry_run)
+
+
 def cmd_post(dry_run: bool = False) -> int:
     db.init()
     pending = db.unposted(config.MAX_POSTS_PER_RUN)
@@ -46,8 +60,7 @@ def cmd_post(dry_run: bool = False) -> int:
         return 0
     posted = 0
     for t in pending:
-        ok = tg.send_message(tg.format_tender(t), dry_run=dry_run)
-        if ok:
+        if _send(t, dry_run):
             if not dry_run:
                 db.mark_posted(t["uid"])
             posted += 1
@@ -80,7 +93,6 @@ def cmd_add():
         "raw_excerpt": None,
     }
     if not filters.accept(t):
-        # Manual entries bypass region/sector rejection but warn
         t.setdefault("region", filters.region_for(t.get("country")) or "Other")
         print("Note: entry would not pass automatic filters; storing anyway.")
     db.upsert(t)

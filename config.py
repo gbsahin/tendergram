@@ -1,24 +1,21 @@
-"""Configuration for TenderGram - Telegram tender channel bot.
-
-Set credentials via environment variables (preferred) or edit defaults here.
-"""
+"""Configuration for TenderGram - Telegram tender channel bot."""
 import os
 
 # --- Telegram ---
-# Create a bot with @BotFather, then add it as an ADMIN to your channel.
 TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
-# Channel username like "@cis_mea_tenders" or numeric id like "-1001234567890"
 TELEGRAM_CHANNEL = os.environ.get("TELEGRAM_CHANNEL", "")
 
-# Seconds between posts (Telegram allows ~20 msgs/min per channel)
 POST_INTERVAL_SECONDS = 3.5
-# Max posts per run (safety valve so a first run doesn't flood the channel)
 MAX_POSTS_PER_RUN = 25
+
+# Visual cards: post each tender as an image card with caption (needs Pillow).
+# Falls back to plain text automatically if Pillow is unavailable.
+VISUAL_CARDS = True
 
 # --- Storage ---
 DB_PATH = os.environ.get("TENDERGRAM_DB", os.path.join(os.path.dirname(__file__), "tenders.db"))
 
-# --- Region filter (country names as they appear in World Bank/UN data) ---
+# --- Region filter ---
 REGIONS = {
     "Turkey": ["Turkiye", "Turkey"],
     "CIS": [
@@ -42,14 +39,19 @@ REGIONS = {
     ],
 }
 
-# Flattened convenience set
 ALL_COUNTRIES = {c for countries in REGIONS.values() for c in countries}
 
+# Region accent colors for visual cards
+REGION_COLORS = {
+    "Turkey": "#C8102E",
+    "CIS": "#1B5FAA",
+    "Middle East": "#C77B0A",
+    "Africa": "#1E7B45",
+}
+
 # --- Sector filter ---
-# World Bank procurement_group codes to always accept: CW = Civil Works
 ACCEPT_PROCUREMENT_GROUPS = {"CW"}
 
-# Keyword match (case-insensitive) on tender title/description for non-CW notices
 SECTOR_KEYWORDS = [
     "epc", "engineering, procurement", "design-build", "design and build",
     "construction", "civil works", "infrastructure", "turnkey",
@@ -59,7 +61,8 @@ SECTOR_KEYWORDS = [
     "building", "housing", "hospital construction", "airport", "port ",
     "dam ", "hydropower", "solar plant", "wind farm", "refinery",
     "supervision of works", "front end engineering", "feed study",
+    "rehabilitation of", "renovation", "facade", "hvac", "mechanical works",
+    "electrical works",
 ]
 
-# Notice types to skip (set to empty set to allow all)
 SKIP_NOTICE_TYPES = {"Contract Award"}

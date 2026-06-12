@@ -12,7 +12,6 @@ def region_for(country: str | None) -> str | None:
 
 
 def matches_sector(tender: dict) -> bool:
-    """Accept if civil-works procurement group, or if title/excerpt hits a keyword."""
     if tender.get("procurement_group") in config.ACCEPT_PROCUREMENT_GROUPS:
         return True
     haystack = " ".join(
