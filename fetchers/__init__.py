@@ -1,4 +1,4 @@
-from . import worldbank
+from . import worldbank, undp
 
-# Live fetchers. Add ungm/ekap/etimad/zakupki here when implemented.
-ACTIVE = [worldbank]
+# Live fetchers. Add ekap/etimad/zakupki/ungm here when implemented.
+ACTIVE = [worldbank, undp]
