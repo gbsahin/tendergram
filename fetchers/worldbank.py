@@ -12,7 +12,7 @@ import urllib.request
 
 SOURCE = "world_bank"
 BASE = "https://search.worldbank.org/api/v2/procnotices"
-NOTICE_URL = "https://projects.worldbank.org/en/projects-operations/procurement/notice/{id}"
+NOTICE_URL = "https://projects.worldbank.org/en/projects-operations/procurement-detail/{id}"
 
 FIELDS = ",".join([
     "id", "notice_type", "noticedate", "submission_deadline_date",
