@@ -13,7 +13,7 @@ BASE = "https://procurement-notices.undp.org/"
 
 SCRIPT_RE = re.compile(r"<(script|style)[^>]*>.*?</\1>", re.S | re.I)
 HTML_RE = re.compile(r"<[^>]+>")
-NOTICE_ID_RE = re.compile(r"view_notice\.cfm\?notice_id=(\d+)", re.I)
+LINK_RE = re.compile(r"view_(?:notice|negotiation)\.cfm\?(?:notice_id|nego_id)=\d+", re.I)
 LABELS = ("Title", "Ref No", "UNDP Office/Country", "Process", "Deadline", "Posted")
 
 
@@ -29,7 +29,13 @@ def fetch() -> list[dict]:
 
 
 def parse(raw: str) -> list[dict]:
-    notice_ids = NOTICE_ID_RE.findall(raw)
+    # Ordered, de-duplicated notice links (a row may contain several anchors
+    # pointing to the same notice).
+    links, seen = [], set()
+    for href in LINK_RE.findall(raw):
+        if href not in seen:
+            seen.add(href)
+            links.append(href)
 
     text = SCRIPT_RE.sub(" ", raw)
     text = HTML_RE.sub("\n", text)
@@ -56,8 +62,7 @@ def parse(raw: str) -> list[dict]:
     for i, r in enumerate(records):
         office = r.get("UNDP Office/Country", "")
         country = office.split("/")[-1].strip().title() if "/" in office else office.title()
-        url = (BASE + f"view_notice.cfm?notice_id={notice_ids[i]}"
-               if i < len(notice_ids) else BASE)
+        url = BASE + links[i] if i < len(links) else BASE
         out.append({
             "source": SOURCE,
             "source_id": r.get("Ref No") or r.get("Title", "")[:80],
