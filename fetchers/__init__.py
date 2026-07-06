@@ -1,4 +1,3 @@
-from . import worldbank, undp
-
+from . import worldbank, undp, news, goszakup
 # Live fetchers. Add ekap/etimad/zakupki/ungm here when implemented.
-ACTIVE = [worldbank, undp]
+ACTIVE = [worldbank, undp, news, goszakup]
