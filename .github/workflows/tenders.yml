@@ -1,8 +1,7 @@
 name: Post tenders to Telegram
-
 on:
-schedule:
-    - cron: "0 6 * * *"   # daily 06:00 UTC = 11:00 TR
+  schedule:
+    - cron: "0 6 * * *"   # daily 06:00 UTC = 9:00 TR
   workflow_dispatch:
 
 permissions:
