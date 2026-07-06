@@ -29,6 +29,7 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHANNEL: ${{ secrets.TELEGRAM_CHANNEL }}
+          GOSZAKUP_TOKEN: ${{ secrets.GOSZAKUP_TOKEN }}
         run: python main.py run
 
       - name: Persist dedupe database
